@@ -1,8 +1,8 @@
 '''
 ___________________________________________________________________________________________________________
-этот файл запускать для песен с неправильными названиями, данными, обложками
+run this file for songs with incorrect titles, data, covers
 -----------------------------------------------------------------------------------------------------------
-исправляет метаданные файла, все данные о файле указываются в songs_info по примеру
+fixes file metadata, all data about the file must be specified in songs_info for example:
 songs_info = {
     "Invader Invader - Kyary Pamyu Pamyu.mp3": (
         "Invader Invader",
@@ -24,10 +24,10 @@ from mutagen.mp3 import MP3
 from mutagen.id3 import ID3, APIC, TIT2, TPE1, TALB, ID3NoHeaderError
 from ytmusicapi import YTMusic
 
-# Папка с mp3
+# Folder with mp3 files
 songs_folder = os.path.join(os.path.dirname(os.path.abspath(__file__)), "songs")
 
-# Данные файлов: имя файла : (title, artist, album)
+# File data: filename : (title, artist, album)
 songs_info = {
     "Invader Invader - Kyary Pamyu Pamyu.mp3": (
         "Invader Invader",
@@ -48,7 +48,7 @@ def get_cover_url(title, artist):
         return None
     return re.sub(r'w\d+-h\d+', 'w400-h400', thumb_url)
 
-# Для обновления названий в исходнике
+# For updating names in the source
 def update_script_filename(old_name, new_name):
     script_path = os.path.abspath(__file__)
     with open(script_path, "r", encoding="utf-8") as f:
@@ -59,23 +59,23 @@ def update_script_filename(old_name, new_name):
         if f'"{old_name}"' in line:
             code_lines[i] = line.replace(f'"{old_name}"', f'"{new_name}"')
             replaced = True
-            print(f"Обновил строку {i+1} в скрипте: '{old_name}' -> '{new_name}'")
+            print(f"Updated line {i+1} in script: '{old_name}' -> '{new_name}'")
             break
 
     if replaced:
         with open(script_path, "w", encoding="utf-8") as f:
             f.writelines(code_lines)
     else:
-        print(f"Не нашёл в скрипте строку с '{old_name}' для замены.")
+        print(f"Did not find line with '{old_name}' in script to replace.")
 
-# Чтобы безопасно и предсказуемо переименовать файл в более простой формат
+# To safely and predictably rename the file to a simpler format
 def make_new_filename(title, artist):
-    # Уберём неподходящие символы для файловой системы
+    # Remove unsuitable filesystem characters
     safe_title = re.sub(r'[\\/:"*?<>|]+', '', title).strip()
     safe_artist = re.sub(r'[\\/:"*?<>|]+', '', artist).strip()
     return f"{safe_title} - {safe_artist}.mp3"
 
-# Список старых имён, чтобы потом обновить скрипт
+# List of old filenames to then update the script
 old_filenames = list(songs_info.keys())
 
 for old_filename in old_filenames:
@@ -83,14 +83,14 @@ for old_filename in old_filenames:
 
     old_filepath = os.path.join(songs_folder, old_filename)
     if not os.path.isfile(old_filepath):
-        print(f"Файл не найден: {old_filepath}")
+        print(f"File not found: {old_filepath}")
         continue
 
-    print(f"Обрабатываю: {old_filename}")
+    print(f"Processing: {old_filename}")
 
     cover_url = get_cover_url(title, artist)
     if not cover_url:
-        print(f"  Обложка не найдена для {title} — {artist}")
+        print(f"  Cover not found for {title} — {artist}")
         continue
 
     try:
@@ -98,7 +98,7 @@ for old_filename in old_filenames:
         response.raise_for_status()
         cover_data = response.content
     except Exception as e:
-        print(f"  Ошибка скачивания обложки: {e}")
+        print(f"  Error downloading cover: {e}")
         continue
 
     try:
@@ -108,7 +108,7 @@ for old_filename in old_filenames:
     except ID3NoHeaderError:
         pass
     except Exception as e:
-        print(f"  Ошибка при удалении тегов: {e}")
+        print(f"  Error deleting tags: {e}")
         continue
 
     audio = MP3(old_filepath, ID3=ID3)
@@ -129,22 +129,22 @@ for old_filename in old_filenames:
     audio.tags.add(TALB(encoding=3, text=album))
 
     audio.save(v2_version=3)
-    print(f"  Теги обновлены для {old_filename}")
+    print(f"  Tags updated for {old_filename}")
 
-    # Теперь переименовываем сам mp3 файл
+    # Now rename the mp3 file itself
     new_filename = make_new_filename(title, artist)
     new_filepath = os.path.join(songs_folder, new_filename)
     if old_filename != new_filename:
         if os.path.exists(new_filepath):
-            print(f"  Новый файл {new_filename} уже существует, пропускаю переименование.")
+            print(f"  New file {new_filename} already exists, skipping rename.")
         else:
             os.rename(old_filepath, new_filepath)
-            print(f"  Файл переименован: '{old_filename}' -> '{new_filename}'")
+            print(f"  File renamed: '{old_filename}' -> '{new_filename}'")
 
-            # Обновляем songs_info словарь — заменяем ключ
+            # Update songs_info dictionary — replace key
             songs_info[new_filename] = songs_info.pop(old_filename)
 
-            # Обновляем сам скрипт (код) — меняем старое имя на новое
+            # Update the script code — replace old name with new
             update_script_filename(old_filename, new_filename)
 
-print("Готово!")
+print("Done!")
