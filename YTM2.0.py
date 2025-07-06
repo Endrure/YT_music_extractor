@@ -1,9 +1,9 @@
 '''
 ___________________________________________________________________________________________________________
-этот файл запускать первым, после скачивания html страницы треков под названием 'YouTube Music.html'
+Run this file first, after downloading the HTML page of tracks named 'YouTube Music.html'
 -----------------------------------------------------------------------------------------------------------
-Вытягивает из 'YouTube Music.html' название, группу, альбом, ссылку и пихает в файл '2.0.txt' здесь же
-‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+Extracts from 'YouTube Music.html' the song title, artist, album, and link, and puts them into the file '2.0.txt' in the same folder
+‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
 '''
 from bs4 import BeautifulSoup
 
@@ -14,7 +14,7 @@ soup = BeautifulSoup(html, 'html.parser')
 
 tracks_info = []
 
-# Находим все блоки с треками
+# Find all blocks containing tracks
 blocks = soup.find_all('div', class_='flex-columns style-scope ytmusic-responsive-list-item-renderer')
 
 for block in blocks:
@@ -23,7 +23,7 @@ for block in blocks:
     album = None
     song_link = None
 
-    # Ищем все ссылки внутри блока
+    # Search for all links inside the block
     links = block.find_all('a', class_='yt-simple-endpoint style-scope yt-formatted-string')
 
     for a in links:
@@ -64,4 +64,4 @@ with open('2.0.txt', 'w', encoding='utf-8') as f:
     for t in tracks_info:
         f.write(f"{t['song']} | {t['artist']} | {t['album']} | {t['link']}\n")
 
-print(f'Найдено треков: {len(tracks_info)}')
+print(f'Found tracks: {len(tracks_info)}')
