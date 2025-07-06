@@ -35,9 +35,9 @@ Then run the script:
    - The progress and any errors are printed to the console.  
    - If YouTube detects unusual traffic, the script pauses for 10 minutes before retrying, without losing already downloaded files.
 
-5. Optionally, run `checker.py` to verify that all songs were downloaded successfully.
+6. Optionally, run `checker.py` to verify that all songs were downloaded successfully.
 
-6. Use `metadata_fixer.py` to fix any incorrect or missing metadata and covers, especially for files with long names.
+7. Use `metadata_fixer.py` to fix any incorrect or missing metadata and covers, especially for files with long names.
 
 ---
 
