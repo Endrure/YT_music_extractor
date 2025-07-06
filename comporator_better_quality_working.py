@@ -1,10 +1,13 @@
 '''
 ___________________________________________________________________________________________________________
-этот файл запускать вторым
+Run this file second
 -----------------------------------------------------------------------------------------------------------
-скачивает все файлы начиная с номера start_line, добавляя им обложки и метаданные, названия файлов формата
-song - author.mp3, метаданные и ссылки берутся из 2.0.txt а картинки с API YT музыки
-файлы выдающие ошибку видно в строке, файлы которые ютуб считает для взрослых в файле age_restricted_file
+Downloads all files starting from number start_line, adding covers and metadata.
+File names are in the format:
+song - author.mp3
+Metadata and links are taken from 2.0.txt, and covers come from the YouTube Music API.
+Files causing errors are visible by line number, files that YouTube marks as age-restricted
+are recorded in the file age_restricted_file.
 ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
 '''
 import os
@@ -16,12 +19,12 @@ from mutagen.mp3 import MP3
 from mutagen.id3 import ID3, APIC, TIT2, TPE1, TALB
 from ytmusicapi import YTMusic
 
-# Путь к yt-dlp
+# Path to yt-dlp
 YTDLP_PATH = r"C:\Users\Me\example\yt-dlp.exe"
 
-# Начальная строка для чтения и нумерации песен (начинается с 1)
+# Starting line number for reading and numbering songs (starts from 1)
 start_line = 2
-# Пути к файлам и папкам
+# Paths to files and folders
 songs_txt = os.path.join(base_dir, "missing.txt")
 songs_folder = os.path.join(base_dir, "songs")
 age_restricted_file = os.path.join(base_dir, "age_restricted.txt")
@@ -41,7 +44,7 @@ def get_cover_url(title, artist):
         return None
     return re.sub(r'w\d+-h\d+', 'w400-h400', thumb_url)
 
-# Читаем список песен начиная с start_line (учитываем, что индексация с 0)
+# Read the song list starting from start_line (considering zero-based indexing)
 with open(songs_txt, encoding="utf-8") as f:
     lines = f.readlines()[start_line - 1:]
 
@@ -62,9 +65,9 @@ age_file = open(age_restricted_file, "a", encoding="utf-8")
 i = 0
 while i < len(songs):
     song = songs[i]
-    line_num = i + start_line  # вычисляем текущий номер строки в исходном файле
+    line_num = i + start_line  # calculate current line number in original file
 
-    print(f"📥 Скачиваем: {song['title']} — {song['artist']} (строка {line_num})")
+    print(f"📥 Downloading: {song['title']} — {song['artist']} (line {line_num})")
 
     filename_base = f"{song['title']} - {song['artist']}"
     safe_filename_base = safe_filename(filename_base)
@@ -82,14 +85,14 @@ while i < len(songs):
     except subprocess.CalledProcessError as e:
         err_text = e.stderr or ""
         if "Sign in to confirm your age" in err_text or "Use --cookies" in err_text:
-            print(f"❌ Возрастное ограничение на строке {line_num}: {song['title']} — {song['artist']}")
+            print(f"❌ Age restriction on line {line_num}: {song['title']} — {song['artist']}")
             age_file.write(f"{line_num}: {song['title']} — {song['artist']}\n")
             age_file.flush()
             i += 1
             continue
         else:
-            print(f"❌ Ошибка при скачивании строки {line_num}: {song['title']} — {song['artist']}")
-            print("⏳ Ждём 10 минут перед повтором...")
+            print(f"❌ Error downloading line {line_num}: {song['title']} — {song['artist']}")
+            print("⏳ Waiting 10 minutes before retry...")
             time.sleep(600)
             continue
 
@@ -97,7 +100,7 @@ while i < len(songs):
 
     cover_url = get_cover_url(song['title'], song['artist'])
     if not cover_url:
-        print(f"  ❌ Обложка не найдена для {song['title']} — {song['artist']}")
+        print(f"  ❌ Cover not found for {song['title']} — {song['artist']}")
         i += 1
         continue
 
@@ -106,7 +109,7 @@ while i < len(songs):
         response.raise_for_status()
         cover_data = response.content
     except Exception as e:
-        print(f"  ❌ Ошибка скачивания обложки: {e}")
+        print(f"  ❌ Error downloading cover: {e}")
         i += 1
         continue
 
@@ -125,4 +128,4 @@ while i < len(songs):
     i += 1
 
 age_file.close()
-print("✅ Готово!")
+print("✅ Done!")
