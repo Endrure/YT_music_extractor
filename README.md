@@ -1,9 +1,9 @@
 # ⚠️ DISCLAIMER ⚠️
 
-**This tool is for personal use only.**  
-**Downloading copyrighted content without permission**  
-**may violate laws and YouTube's terms of service.**  
-**Use responsibly.**
+### **This tool is for personal use only.**  
+### **Downloading copyrighted content without permission**  
+### **may violate laws and YouTube's terms of service.**  
+### **Use responsibly.**
 
 # User Manual
 
