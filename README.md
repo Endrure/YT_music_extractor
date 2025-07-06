@@ -25,8 +25,7 @@ Make sure you have Python installed. Then install the required libraries by runn
    This extracts all song information and saves it to `2.0.txt`.
 
 4. **Before running** `comparator_better_quality_working.py`:  
-Right after the import statements at the top of the script, locate the line  
-`YTDLP_PATH = r"C:\Users\Me\example\yt-dlp.exe"`
+Right after the import statements at the top of the script, locate the line `YTDLP_PATH = r"C:\Users\Me\example\yt-dlp.exe"`
 and replace the example path "C:\Users\Me\example\yt-dlp.exe" with the full path to your local yt-dlp.exe file on your computer.
 Then run the script:
    This downloads the songs with proper metadata and 400x400 album covers at roughly 1 song per 8 seconds.  
