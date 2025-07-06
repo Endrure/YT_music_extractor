@@ -1,30 +1,31 @@
 '''
 ___________________________________________________________________________________________________________
-это файл проверки всё ли скачалось
+This is a file to check if everything has been downloaded
 -----------------------------------------------------------------------------------------------------------
-проверяет все ли файлы из 2.0 есть в скачанных, те которых нет записывает в missing.txt лишние в extra.txt
+Checks if all files from 2.0.txt exist in the downloaded songs folder;
+those missing are written to missing.txt, extra files are written to extra.txt
 ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
 '''
 import os
 import re
 
-# Функция очистки имени файла от запрещённых символов Windows
+# Function to clean filename from Windows forbidden characters
 def sanitize_filename(name):
-    # Удаляем символы: \ / : * ? " < > |
+    # Remove characters: \ / : * ? " < > |
     return re.sub(r'[\\/:"*?<>|]+', '', name).strip()
 
-# Определяем директорию, где находится этот скрипт
+# Determine the directory where this script is located
 script_dir = os.path.dirname(os.path.abspath(__file__))
 
-# Пути к файлу плейлиста и папке песен — относительно скрипта
+# Paths to the playlist file and songs folder — relative to the script
 playlist_path = os.path.join(script_dir, "2.0.txt")
 songs_folder = os.path.join(script_dir, "songs")
 
-output_folder = script_dir  # Можно менять, если нужно
+output_folder = script_dir  # Can be changed if needed
 
-# Чтение списка песен из файла
+# Read the list of songs from the file
 with open(playlist_path, "r", encoding="utf-8") as file:
-    lines = file.readlines()[1:]  # Пропустить заголовок
+    lines = file.readlines()[1:]  # Skip the header line
 
 expected_files = {}
 for line in lines:
@@ -35,7 +36,7 @@ for line in lines:
     filename = f"{sanitize_filename(song)} - {sanitize_filename(artist)}.mp3"
     expected_files[filename] = line.strip()
 
-# Файлы в папке
+# Files in the songs folder
 actual_files = {
     f for f in os.listdir(songs_folder)
     if f.lower().endswith(".mp3")
@@ -43,42 +44,42 @@ actual_files = {
 
 expected_set = set(expected_files.keys())
 
-# Песни, которые отсутствуют
+# Songs that are missing
 missing = expected_set - actual_files
-# Песни, которые лишние
+# Songs that are extra (not expected)
 extra = actual_files - expected_set
 
-# Запись отсутствующих песен
+# Write missing songs to file
 missing_path = os.path.join(output_folder, "missing.txt")
 with open(missing_path, "w", encoding="utf-8") as f:
     f.write("Song|Artist|Album|Link\n")
     for filename in missing:
         f.write(expected_files[filename] + "\n")
 
-# Запись лишних песен
+# Write extra songs to file
 extra_path = os.path.join(output_folder, "extra.txt")
 with open(extra_path, "w", encoding="utf-8") as f:
     for filename in extra:
         f.write(filename + "\n")
 
-print(f"Создан файл отсутствующих: {missing_path}")
-print(f"Создан файл лишних: {extra_path}")
+print(f"Created missing file list: {missing_path}")
+print(f"Created extra file list: {extra_path}")
 
-# Считаем количество треков в плейлисте (пропускаем заголовок)
+# Count tracks in playlist (skip header)
 with open(playlist_path, "r", encoding="utf-8") as f:
     playlist_lines = [line.strip() for line in f.readlines() if line.strip()]
-    playlist_count = len(playlist_lines) - 1  # минус строка "Song|Artist|Album|Link"
+    playlist_count = len(playlist_lines) - 1  # minus the header "Song|Artist|Album|Link"
 
-# Считаем количество mp3-файлов в папке
+# Count mp3 files in songs folder
 songs_count = len([
     f for f in os.listdir(songs_folder)
     if f.lower().endswith(".mp3")
 ])
 
-# Вывод
-print(f"🎵 В плейлисте: {playlist_count} треков")
-print(f"📁 В папке: {songs_count} файлов")
+# Output summary
+print(f"🎵 In playlist: {playlist_count} tracks")
+print(f"📁 In folder: {songs_count} files")
 if playlist_count == songs_count:
-    print("✅ Количество совпадает.")
+    print("✅ Counts match.")
 else:
-    print("⚠️ Количество НЕ совпадает.")
+    print("⚠️ Counts DO NOT match.")
