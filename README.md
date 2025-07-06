@@ -1,6 +1,9 @@
-# Disclaimer
+# ⚠️ DISCLAIMER ⚠️
 
-This tool is intended for personal use only. Please ensure you have the legal rights or permission to download any music or content using this software. Downloading copyrighted material without authorization may violate copyright laws and YouTube's terms of service. The author is not responsible for any misuse of this tool.
+**This tool is for personal use only.**  
+**Downloading copyrighted content without permission**  
+**may violate laws and YouTube's terms of service.**  
+**Use responsibly.**
 
 # User Manual
 
